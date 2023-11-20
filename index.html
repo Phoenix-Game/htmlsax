@@ -29,7 +29,7 @@
 yum install -y httpd git
  
 # Clone HTML repository from GitHub
-git clone https://github.com/Phoenix-Game/htmlsax.git /root/
+git clone https://github.com/Phoenix-Game/htmlsax.git /root/htmlsax
  
 # Move HTML files to Apache server directory
 cp -r /root/htmlsax/* /var/www/html/
@@ -61,9 +61,6 @@ yum install -y docker-compose
 # Clone HTML repository from GitHub
 git clone https://github.com/Phoenix-Game/htmlsax.git /root/htmlsax/
  
-# Change to the httpd directory
-cd /root/htmlsax/
- 
 # Create docker-compose.yml
 echo 'version: "3"
 services:
@@ -72,10 +69,10 @@ services:
     volumes:
       - /root/htmlsax/:/usr/local/apache2/htdocs
     ports:
-      - "80:80"' >docker-compose.yml
+      - "80:80"' >/root/htmlsax/docker-compose.yml
  
 # Run httpd in Docker
-docker-compose up -d
+docker-compose -f /root/htmlsax/docker-compose.yml up -d
     </code>
   </pre>
   
