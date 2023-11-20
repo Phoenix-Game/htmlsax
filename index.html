@@ -85,10 +85,10 @@ services:
     image: oznu/cloudflare-ddns:latest
     restart: always
     environment:
-      - API_KEY=xxxxxxx
-      - ZONE=example.com
-      - SUBDOMAIN=subdomain
-      - PROXIED=true >/root/cloudflare/docker-compose.yml
+      - API_KEY=48GvKZKBWUuWyaQ5InoZO-1ysvb3jbXV0fJHwFZA
+      - ZONE=phoenixgame.co.uk
+      - SUBDOMAIN=test
+      - PROXIED=true' >/root/cloudflare/docker-compose.yml
 
 # Run cloudflare DDnS in Docker
 docker-compose -f /root/cloudflare/docker-compose.yml up -d
