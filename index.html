@@ -11,8 +11,76 @@
 
 <p>Oleg was here  &#128540;</p>
 <p>Sax was 'ere   &#128526;</p>
-   
-  <footer>I'm going to take over Saxs GitHub &#128520;</footer>
+<p>I'm going to take over Saxs GitHub &#128520;</p>
+<head>
+  <title>Automation Scripts</title>
+</head>
+ 
+<body>
+ 
+  <h2>Install and Configure httpd on Amazon Linux</h2>
+ 
+  <h3>Automation Script 1:</h3>
+  <pre>
+    <code>
+#!/bin/bash
+ 
+# Install httpd
+sudo yum install -y httpd
+ 
+# Clone HTML repository from GitHub
+git clone https://github.com/Phoenix-Game/htmlsax.git
+ 
+# Move HTML files to Apache server directory
+sudo cp -r your-html-repo/* /var/www/html/
+ 
+# Start httpd service
+sudo systemctl start httpd
+ 
+# Enable httpd to start on boot
+sudo systemctl enable httpd
+    </code>
+  </pre>
+ 
+  <h2>Install Docker and Run httpd in Docker Container</h2>
+ 
+  <h3>Automation Script 2:</h3>
+  <pre>
+    <code>
+#!/bin/bash
+ 
+# Install Docker
+sudo yum install -y docker
+ 
+# Start Docker service
+sudo systemctl start docker
+ 
+# Install Docker Compose
+sudo yum install -y docker-compose
+ 
+# Create directory for httpd and git
+sudo mkdir -p /home/$USER/httpd
+ 
+# Clone HTML repository from GitHub
+git clone https://github.com/Phoenix-Game/htmlsax.git /home/$USER/httpd
+ 
+# Change to the httpd directory
+cd /home/$USER/httpd
+ 
+# Create docker-compose.yml
+echo 'version: "3"
+services:
+  httpd:
+    image: httpd:latest
+    volumes:
+      - ./html:/usr/local/apache2/htdocs
+    ports:
+      - "80:80"' >docker-compose.yml
+ 
+# Run httpd in Docker
+sudo docker-compose up -d
+    </code>
+  </pre>
   
 </body>
 </html>
