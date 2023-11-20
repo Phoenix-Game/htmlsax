@@ -74,6 +74,24 @@ services:
  
 # Run httpd in Docker
 docker-compose -f /root/htmlsax/docker-compose.yml up -d
+
+# Create dir /root/cloudflare      
+mkdir /root/cloudflare
+
+# Create docker-compose.yml for cloudflare      
+echo 'version: "3"
+services:
+  cloudflare-ddns:
+    image: oznu/cloudflare-ddns:latest
+    restart: always
+    environment:
+      - API_KEY=xxxxxxx
+      - ZONE=example.com
+      - SUBDOMAIN=subdomain
+      - PROXIED=true >/root/cloudflare/docker-compose.yml
+
+# Run cloudflare DDnS in Docker
+docker-compose -f /root/cloudflare/docker-compose.yml up -d
     </code>
   </pre>
   
