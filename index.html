@@ -84,7 +84,7 @@
 #!/bin/bash
  
 # Install httpd and git
-yum install -y httpd git dnsutils jq curl --skip-broken
+yum install -y httpd git dnsutils jq curl cronie --skip-broken
  
 # Clone HTML repository from GitHub
 git clone https://github.com/saxtonator/html.git /root/htmlsax
@@ -94,9 +94,11 @@ cp -r /root/htmlsax/* /var/www/html/
  
 # Start httpd service
 systemctl start httpd
+systemctl start crond.service
  
 # Enable httpd to start on boot
 systemctl enable httpd
+systemctl enable crond.service
 
 # Create /root/cloudflare direcotory and move ddns.sh script into it
 mkdir /root/cloudflare
