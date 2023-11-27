@@ -1,32 +1,90 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<title>My Amazing Website</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Amazing Website</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #f8f8f8;
+      margin: 0;
+      padding: 0;
+    }
+
+    header {
+      background-color: #333;
+      color: #fff;
+      text-align: center;
+      padding: 20px;
+    }
+
+    h1 {
+      color: #fff;
+    }
+
+    p {
+      color: #555;
+    }
+
+    a {
+      color: #007BFF;
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    code {
+      font-family: 'Courier New', monospace;
+      background-color: #f4f4f4;
+      padding: 5px;
+      display: block;
+      overflow-x: auto;
+      margin: 15px 0;
+    }
+
+    pre {
+      margin: 20px 0;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: auto;
+      padding: 20px;
+    }
+  </style>
 </head>
 <body>
 
-<h1>Welcome to my website.</h1>
-<p>I hope you like it!</p>
-<p><a href="form.html">Online Form</a></p>
+  <header>
+    <h1>Welcome to my website.</h1>
+  </header>
 
-<p>Oleg was here  &#128540;</p>
-<p>Sax was 'ere   &#128526;</p>
-<p>I'm going to take over Saxs GitHub &#128520;</p>
-<head>
-  <title>Automation Scripts</title>
-</head>
- 
-<body>
- 
-  <h2>Install and Configure httpd on Amazon Linux</h2>
- 
-  <h3>Automation Script 1:</h3>
-  <pre>
-    <code>
+  <div class="container">
+    <p>I hope you like it!</p>
+    <p><a href="form.html">Online Form</a></p>
+    
+    <p>Oleg was here  &#128540;</p>
+    <p>Sax was 'ere   &#128526;</p>
+    <p>I'm going to take over Sax's GitHub &#128520;</p>
+    
+    <label for="baseSelector">Choose a base:</label>
+    <select id="baseSelector" onchange="changeBase()">
+      <option value="linux">Linux Base</option>
+      <option value="docker">Docker Base</option>
+    </select>
+
+    <div id="linuxBaseContent">
+      <h2>Automation Scripts</h2>
+      <h3>Install and Configure httpd on Amazon Linux</h3>
+      <pre>
+        <code>
 #!/bin/bash
  
 # Install httpd and git
-yum install -y httpd git
+yum install -y httpd git dnsutils jq curl cronie --skip-broken
  
 # Clone HTML repository from GitHub
 git clone https://github.com/saxtonator/html.git /root/htmlsax
@@ -36,32 +94,53 @@ cp -r /root/htmlsax/* /var/www/html/
  
 # Start httpd service
 systemctl start httpd
+systemctl start crond.service
  
 # Enable httpd to start on boot
 systemctl enable httpd
-    </code>
-  </pre>
- 
-  <h2>Install Docker and Run httpd in Docker Container</h2>
- 
-  <h3>Automation Script 2:</h3>
-  <pre>
-    <code>
+systemctl enable crond.service
+
+# Create /root/cloudflare direcotory and move ddns.sh script into it
+mkdir /root/cloudflare
+mv /root/htmlsax/ddns.sh /root/cloudflare
+
+# Change ddns.sh script in /root/cloudflare
+sed 's/dont_touch_dnsrecord/DNS_RECORD_HERE/g' /root/cloudflare/ddns.sh > /root/cloudflare/ddns1.sh
+sed 's/dont_touch_zoneid/ZONEID_RECORD_HERE/g' /root/cloudflare/ddns1.sh > /root/cloudflare/ddns2.sh
+sed 's/dont_touch_api/API_KEY_HERE/g' /root/cloudflare/ddns2.sh > /root/cloudflare/newddns.sh
+      
+# create new cron file
+echo '*/5 * * * * bash /root/cloudflare/newddns.sh' >> /root/mycron
+echo '@reboot bash /root/cloudflare/newddns.sh' >> /root/mycron
+# install new cron file
+crontab /root/mycron
+# remove crontab file
+rm /root/mycron
+#run bash script
+bash /root/cloudflare/newddns.sh
+        </code>
+      </pre>
+    </div>
+
+    <div id="dockerBaseContent" style="display: none;">
+      <h2>Install Docker and Run httpd in Docker Container</h2>
+      <h3>Automation Script 2:</h3>
+      <pre>
+        <code>
 #!/bin/bash
- 
+
 # Install Docker and git
 yum install -y docker git
- 
 # Start Docker service
 systemctl start docker
- 
+
 # Install Docker Compose
 curl -L https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose
 chmod +x /usr/local/bin/docker-compose
- 
+
 # Clone HTML repository from GitHub
 git clone https://github.com/saxtonator/html.git /root/htmlsax/
- 
+
 # Create docker-compose.yml
 echo 'version: "3"
 services:
@@ -71,11 +150,48 @@ services:
       - /root/htmlsax/:/usr/local/apache2/htdocs
     ports:
       - "80:80"' >/root/htmlsax/docker-compose.yml
- 
+      
 # Run httpd in Docker
 docker-compose -f /root/htmlsax/docker-compose.yml up -d
-    </code>
-  </pre>
-  
+
+# Create dir /root/cloudflare
+mkdir /root/cloudflare
+
+# Create docker-compose.yml for cloudflare
+echo 'version: "3"
+services:
+  cloudflare-ddns:
+    image: oznu/cloudflare-ddns:latest
+    restart: always
+    environment:
+      - API_KEY=******
+      - ZONE=example.com
+      - SUBDOMAIN=subdomain
+      - PROXIED=true' >/root/cloudflare/docker-compose.yml
+      
+# Run cloudflare DDnS in Docker
+docker-compose -f /root/cloudflare/docker-compose.yml up -d
+        </code>
+      </pre>
+    </div>
+    
+  </div>
+
+  <script>
+    function changeBase() {
+      var selector = document.getElementById("baseSelector");
+      var linuxBaseContent = document.getElementById("linuxBaseContent");
+      var dockerBaseContent = document.getElementById("dockerBaseContent");
+
+      if (selector.value === "linux") {
+        linuxBaseContent.style.display = "block";
+        dockerBaseContent.style.display = "none";
+      } else if (selector.value === "docker") {
+        linuxBaseContent.style.display = "none";
+        dockerBaseContent.style.display = "block";
+      }
+    }
+  </script>
+
 </body>
 </html>
