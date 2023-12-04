@@ -176,7 +176,7 @@ docker-compose -f /root/cloudflare/docker-compose.yml up -d
       </pre>
     </div>
 
-    <div id="formationBaseContent">
+    <div id="formationBaseContent" style="display: none;">
       <h2>CloudFormation</h2>
       <h3>Install and Configure httpd on Amazon Linux EC2 with CloudFormation</h3>
       <pre>
@@ -207,13 +207,21 @@ Outputs:
       var selector = document.getElementById("baseSelector");
       var linuxBaseContent = document.getElementById("linuxBaseContent");
       var dockerBaseContent = document.getElementById("dockerBaseContent");
+      var formationBaseContent = document.getElementById("formationBaseContent");
+      
 
       if (selector.value === "linux") {
         linuxBaseContent.style.display = "block";
         dockerBaseContent.style.display = "none";
+        formationBaseContent.style.display = "none";
       } else if (selector.value === "docker") {
         linuxBaseContent.style.display = "none";
         dockerBaseContent.style.display = "block";
+        formationBaseContent.style.display = "none";
+      } else if (selector.value === "formation") {
+        linuxBaseContent.style.display = "none";
+        dockerBaseContent.style.display = "none";
+        formationBaseContent.style.display = "block";
       }
     }
   </script>
