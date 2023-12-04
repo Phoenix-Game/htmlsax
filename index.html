@@ -74,6 +74,7 @@
     <select id="baseSelector" onchange="changeBase()">
       <option value="linux">Linux Base</option>
       <option value="docker">Docker Base</option>
+      <option value="formation">CloudFormation</option>
     </select>
 
     <div id="linuxBaseContent">
@@ -87,7 +88,7 @@
 yum install -y httpd git dnsutils jq curl cronie --skip-broken
  
 # Clone HTML repository from GitHub
-git clone https://github.com/saxtonator/html.git /root/htmlsax
+git clone https://github.com/Phoenix-Game/htmlsax.git /root/htmlsax
  
 # Move HTML files to Apache server directory
 cp -r /root/htmlsax/* /var/www/html/
@@ -139,7 +140,7 @@ curl -L https://github.com/docker/compose/releases/latest/download/docker-compos
 chmod +x /usr/local/bin/docker-compose
 
 # Clone HTML repository from GitHub
-git clone https://github.com/saxtonator/html.git /root/htmlsax/
+git clone https://github.com/Phoenix-Game/htmlsax.git /root/htmlsax/
 
 # Create docker-compose.yml
 echo 'version: "3"
@@ -171,6 +172,30 @@ services:
       
 # Run cloudflare DDnS in Docker
 docker-compose -f /root/cloudflare/docker-compose.yml up -d
+        </code>
+      </pre>
+    </div>
+
+    <div id="formationBaseContent">
+      <h2>CloudFormation</h2>
+      <h3>Install and Configure httpd on Amazon Linux EC2 with CloudFormation</h3>
+      <pre>
+        <code>
+Resources:
+  MyEC2Instance:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t2.micro
+      ImageId: ami-0230bd60aa48260c6 # Amazon Linux ID, change if needed
+      KeyName: key # Add Key name here
+      SecurityGroupIds:
+        - sg-0123 # Add Security Group ID here
+      UserData:
+        Fn::Base64: !Sub |
+# Add a bash script here for example
+Outputs:
+  InstanceId:
+    Value: !Ref MyEC2Instance
         </code>
       </pre>
     </div>
